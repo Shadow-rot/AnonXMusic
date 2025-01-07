@@ -1,11 +1,10 @@
 import re
-
+import asyncio
+import vlc
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
 from youtubesearchpython.__future__ import VideosSearch
-
 import config
-
 
 class SpotifyAPI:
     def __init__(self):
@@ -28,6 +27,18 @@ class SpotifyAPI:
         else:
             return False
 
+    async def play_music(self, ytlink: str):
+        instance = vlc.Instance()
+        player = instance.media_player_new()
+        media = instance.media_new(ytlink)
+        player.set_media(media)
+        player.play()
+        while True:
+            state = player.get_state()
+            if state == vlc.State.Ended:
+                break
+            await asyncio.sleep(1)
+
     async def track(self, link: str):
         track = self.spotify.track(link)
         info = track["name"]
@@ -49,6 +60,7 @@ class SpotifyAPI:
             "duration_min": duration_min,
             "thumb": thumbnail,
         }
+        await self.play_music(ytlink)
         return track_details, vidid
 
     async def playlist(self, url):
