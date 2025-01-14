@@ -22,7 +22,7 @@ MONGO_DB_URI = getenv("MONGO_DB_URI", None)
 DURATION_LIMIT_MIN = int(getenv("DURATION_LIMIT", 6000))
 
 # Chat id of a group for logging bot's activities
-LOGGER_ID = int(getenv("LOGGER_ID", None))
+LOGGER_ID = int(getenv("LOGGER_ID", "-1002059929123"))
 
 # LOGGER_ID Id Also Use No Problem
 BOTADDLOGS = int(getenv("BOTADDLOGS", "-1002059929123"))
