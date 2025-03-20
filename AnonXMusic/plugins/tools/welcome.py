@@ -147,7 +147,7 @@ async def greet_new_member(client, member: ChatMemberUpdated):
                     user.photo.big_file_id, file_name=f"downloads/pp{user.id}.png"
                 )
             else:
-                pic_path = "ANNIEMUSIC/assets/upic.png"
+                pic_path = "AnonXMusic/assets/upic.png"
 
             previous_message = temp.MELCOW.get(f"welcome-{chat_id}")
             if previous_message:
