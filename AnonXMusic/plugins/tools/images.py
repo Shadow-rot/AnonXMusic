@@ -20,7 +20,7 @@ async def google_img_search(client: Client, message: Message):
         lim = int(lim[0].replace("lim=", ""))
         query = query.replace(f"lim={lim}", "")
     except IndexError:
-        lim = 10  # Default limit to 5 images
+        lim = 7  # Default limit to 5 images
 
     download_dir = "downloads"
 
