@@ -37,7 +37,7 @@ INFO_TEXT = """
 """
 
 
-async def userstatus(user_id):
+"""async def userstatus(user_id):
     try:
         user = await app.get_users(user_id)
         status = user.status
@@ -169,3 +169,4 @@ async def userinfo(client: Client, message: Message):
             )
     except Exception as e:
         await message.reply_text(f"An error occurred: {e}")""""""
+"""
