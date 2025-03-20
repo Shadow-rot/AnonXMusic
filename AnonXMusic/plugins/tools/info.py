@@ -1,4 +1,4 @@
-import os
+"""import os
 import random
 from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont
@@ -168,4 +168,4 @@ async def userinfo(client: Client, message: Message):
                 reply_to_message_id=message.id
             )
     except Exception as e:
-        await message.reply_text(f"An error occurred: {e}")
+        await message.reply_text(f"An error occurred: {e}")"""
