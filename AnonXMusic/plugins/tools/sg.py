@@ -1,4 +1,4 @@
-import asyncio
+"""import asyncio
 import random
 
 from pyrogram import Client, filters
@@ -50,3 +50,4 @@ async def sg(client: Client, message: Message):
         pass
 
     await lol.delete()
+"""
