@@ -125,7 +125,7 @@ async def member_has_left(client: app, member: ChatMemberUpdated):
                 profile_path=photo,
             )
 
-            caption = f"**#New_Member_Left**\n\n**๏** {user.mention} **has left this group**\n**๏ See you soon again..!**"
+            caption = f"#New_Member_Left\n\n๏ {user.mention} has left this group\n๏ See you soon again..!"
             button_text = "๏ View User ๏"
 
             deep_link = f"tg://openmessage?user_id={user.id}"
