@@ -186,7 +186,7 @@ async def greet_new_member(client, member: ChatMemberUpdated):
             )
             temp.MELCOW[f"welcome-{chat_id}"] = welcome_message
 
-            if pic_path and os.path.exists(pic_path) and "ANNIEMUSIC/assets/upic.png" not in pic_path:
+            if pic_path and os.path.exists(pic_path) and "AnonXMusic/assets/upic.png" not in pic_path:
                 os.remove(pic_path)
             if welcome_img and os.path.exists(welcome_img):
                 os.remove(welcome_img)
