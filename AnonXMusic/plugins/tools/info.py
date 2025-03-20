@@ -21,7 +21,7 @@ font_path = "AnonXMusic/assets/jarvisinf.ttf"
 
 
 INFO_TEXT = """
-❅─────✧❅✦❅✧─────❅
+"""❅─────✧❅✦❅✧─────❅
             ✦ ᴜsᴇʀ ɪɴғᴏ ✦
 
 ➻ ᴜsᴇʀ ɪᴅ ‣ `{}`
