@@ -20,7 +20,7 @@ async def google_img_search(client: Client, message: Message):
         lim = int(lim[0].replace("lim=", ""))
         query = query.replace(f"lim={lim}", "")
     except IndexError:
-        lim = 7  # Default limit to 5 images
+        lim = 10  # Default limit to 5 images
 
     download_dir = "downloads"
 
@@ -38,7 +38,7 @@ async def google_img_search(client: Client, message: Message):
     count = 0
     for img in lst:
         count += 1
-        await msg.edit(f"=> Annie owo scrapped images {count}")
+        await msg.edit(f"=> ding ding owo scrapped images {count}")
 
     try:
         await app.send_media_group(
