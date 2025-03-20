@@ -5,7 +5,7 @@ from PIL import Image, ImageDraw, ImageFont
 from pyrogram import filters, Client, enums
 from pyrogram.types import Message
 from typing import Union, Optional
-from ANNIEMUSIC import app
+from AnonXMusic import app
 
 
 anniephoto = [
