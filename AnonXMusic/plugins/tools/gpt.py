@@ -1,4 +1,4 @@
-import os
+"""import os
 from gtts import gTTS
 
 from pyrogram import Client, filters
@@ -94,4 +94,4 @@ async def chat_annie(client: Client, message: Message):
                 os.remove(audio_file)
 
     except Exception as e:
-        await message.reply_text(f"An unexpected error occurred: {e}")
+        await message.reply_text(f"An unexpected error occurred: {e}")"""
