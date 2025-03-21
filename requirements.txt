@@ -56,3 +56,4 @@ cloudscraper
 pycryptodome
 opencv-python
 bing_image_downloader
+lexica-api
