@@ -135,7 +135,7 @@ async def greet_new_member(client, member: ChatMemberUpdated):
         await wlcm.auto_disable_welcome(chat_id)
         await client.send_message(
             chat_id,
-            "**ᴍᴀssɪᴠᴇ ᴊᴏɪɴ ᴅᴇᴛᴇᴄᴛᴇᴅ. ᴡᴇʟᴄᴏᴍᴇ ᴍᴇssᴀɢᴇs ᴀʀᴇ ᴛᴇᴍᴘᴏʀᴀʀɪʟʏ ᴅɪsᴀʙʟᴇᴅ ғᴏʀ 30 ᴍɪɴᴜᴛᴇs.**"
+            "ᴍᴀssɪᴠᴇ ᴊᴏɪɴ ᴅᴇᴛᴇᴄᴛᴇᴅ. ᴡᴇʟᴄᴏᴍᴇ ᴍᴇssᴀɢᴇs ᴀʀᴇ ᴛᴇᴍᴘᴏʀᴀʀɪʟʏ ᴅɪsᴀʙʟᴇᴅ ғᴏʀ 30 ᴍɪɴᴜᴛᴇs."
         )
         return
 
@@ -169,15 +169,15 @@ async def greet_new_member(client, member: ChatMemberUpdated):
                 chat_id,
                 photo=welcome_img,
                 caption=f"""
-**❅────✦ ᴡᴇʟᴄᴏᴍᴇ ᴛᴏ ✦────❅
+❅────✦ ᴡᴇʟᴄᴏᴍᴇ ᴛᴏ ✦────❅
 {member.chat.title}
 ▰▰▰▰▰▰▰▰▰▰▰▰▰
 ➻ Nᴀᴍᴇ ✧ {user.mention}
-➻ Iᴅ ✧ `{user.id}`
+➻ Iᴅ ✧ {user.id}
 ➻ Usᴇʀɴᴀᴍᴇ ✧ @{user.username or "No Username"}
 ➻ Tᴏᴛᴀʟ Mᴇᴍʙᴇʀs ✧ {count}
 ▰▰▰▰▰▰▰▰▰▰▰▰▰**
-**❅─────✧❅✦❅✧─────❅**
+❅─────✧❅✦❅✧─────❅
 """,
                 reply_markup=InlineKeyboardMarkup([
                     [InlineKeyboardButton(button_text, url=deep_link)],
