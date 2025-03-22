@@ -1,101 +1,73 @@
 import os
-import asyncio
-from re import findall
 from pyrogram import Client, filters
 from pyrogram.types import Message
 from yt_dlp import YoutubeDL
-from AnonXMusic import app
+from AnonXMusic import app  # use your own app/client if different
 
 DOWNLOAD_DIR = "downloads"
 
-YTDL_OPTIONS = {
-    'format': 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/mp4',
-    'merge_output_format': 'mp4',
-    'outtmpl': f'{DOWNLOAD_DIR}/%(title).70s.%(ext)s',
-    'quiet': True,
-    'no_warnings': True,
-    'noplaylist': True,
+if not os.path.exists(DOWNLOAD_DIR):
+    os.makedirs(DOWNLOAD_DIR)
+
+YTDL_OPTS = {
+    "format": "mp4",
+    "outtmpl": f"{DOWNLOAD_DIR}/%(title).70s.%(ext)s",
+    "quiet": True,
+    "no_warnings": True,
+    "noplaylist": True,
+    "merge_output_format": "mp4"
 }
 
 
 @app.on_message(filters.command(["vid", "video"], prefixes=["/", "!"]))
-async def video_search(client: Client, message: Message):
-    if not os.path.exists(DOWNLOAD_DIR):
-        os.makedirs(DOWNLOAD_DIR)
+async def youtube_video(client: Client, message: Message):
+    if len(message.command) < 2:
+        return await message.reply("**Please provide a search query.**\n\nExample: `/vid cat video`")
 
-    try:
-        query = message.text.split(None, 1)[1]
-    except IndexError:
-        return await message.reply("Give me something to search! Example: `/vid cats lim=1`")
-
-    lim = findall(r"lim=\d+", query)
-    try:
-        lim = int(lim[0].replace("lim=", ""))
-        query = query.replace(f"lim={lim}", "")
-    except IndexError:
-        lim = 1  # Default 1 video
-
-    status = await message.reply("Searching for videos...")
+    query = message.text.split(None, 1)[1]
+    await message.reply_chat_action("typing")
 
     search_opts = {
-        'quiet': True,
-        'skip_download': True,
-        'extract_flat': True,
-        'default_search': 'ytsearch',
+        "quiet": True,
+        "skip_download": True,
+        "extract_flat": True,
+        "default_search": "ytsearch1"
     }
 
     try:
         with YoutubeDL(search_opts) as ydl:
-            info = ydl.extract_info(f"ytsearch{lim}:{query}", download=False)
-            entries = info.get("entries", [])
-            if not entries:
-                return await status.edit("No videos found.")
+            search_result = ydl.extract_info(f"ytsearch1:{query}", download=False)
+            if not search_result or not search_result.get("entries"):
+                return await message.reply("No results found.")
+
+            video_data = search_result["entries"][0]
+            video_url = f"https://www.youtube.com/watch?v={video_data['id']}"
+            video_title = video_data.get("title", "video")
+
+        status = await message.reply(f"**Downloading:** `{video_title}`")
+
+        with YoutubeDL(YTDL_OPTS) as ydl:
+            info = ydl.extract_info(video_url, download=True)
+            filename = ydl.prepare_filename(info)
+            if not filename.endswith(".mp4"):
+                filename = os.path.splitext(filename)[0] + ".mp4"
+
+        # Check size
+        file_size = os.path.getsize(filename)
+        max_size = 50 * 1024 * 1024  # 50MB
+        if file_size > max_size:
+            os.remove(filename)
+            return await status.edit("❌ The downloaded video is too large to send via bot (limit: 50MB).")
+
+        await client.send_video(
+            chat_id=message.chat.id,
+            video=filename,
+            caption=f"🎬 **{video_title}**",
+            reply_to_message_id=message.id
+        )
+
+        os.remove(filename)
+        await status.delete()
+
     except Exception as e:
-        return await status.edit(f"Search failed: {e}")
-
-    downloaded = []
-
-    for i, entry in enumerate(entries):
-        try:
-            url = f"https://www.youtube.com/watch?v={entry['id']}"
-            await status.edit(f"Downloading video {i+1}: {entry['title'][:50]}")
-
-            with YoutubeDL(YTDL_OPTIONS) as ydl:
-                info = ydl.extract_info(url, download=True)
-                file_path = ydl.prepare_filename(info)
-                # Auto-fix extensions
-                if not file_path.endswith(".mp4"):
-                    base = os.path.splitext(file_path)[0]
-                    file_path = base + ".mp4"
-                if os.path.exists(file_path):
-                    downloaded.append(file_path)
-        except Exception as e:
-            print(f"Error downloading: {e}")
-            continue
-
-    if not downloaded:
-        return await status.edit("Failed to download any videos.")
-
-    await status.edit("Uploading to Telegram...")
-
-    for video in downloaded:
-        try:
-            # Check if under 50MB (Telegram bot limit)
-            if os.path.getsize(video) > 50 * 1024 * 1024:
-                await message.reply(f"❌ Skipping `{os.path.basename(video)}` — too large.")
-                os.remove(video)
-                continue
-
-            await client.send_video(
-                chat_id=message.chat.id,
-                video=video,
-                caption=f"Here's your video!",
-                reply_to_message_id=message.id
-            )
-            os.remove(video)
-        except Exception as e:
-            await message.reply(f"Failed to upload video: {e}")
-            if os.path.exists(video):
-                os.remove(video)
-
-    await status.delete()
+        await message.reply(f"❌ Error: `{str(e)}`")
