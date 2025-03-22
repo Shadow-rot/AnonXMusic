@@ -1,11 +1,11 @@
 import os
 from pyrogram import Client, filters
 from pyrogram.types import Message
+from pyrogram.enums import ChatAction
 from yt_dlp import YoutubeDL
-from AnonXMusic import app  # use your own app/client if different
+from AnonXMusic import app  # your existing bot client
 
 DOWNLOAD_DIR = "downloads"
-
 if not os.path.exists(DOWNLOAD_DIR):
     os.makedirs(DOWNLOAD_DIR)
 
@@ -25,7 +25,7 @@ async def youtube_video(client: Client, message: Message):
         return await message.reply("**Please provide a search query.**\n\nExample: `/vid cat video`")
 
     query = message.text.split(None, 1)[1]
-    await message.reply_chat_action("typing")
+    await client.send_chat_action(chat_id=message.chat.id, action=ChatAction.TYPING)
 
     search_opts = {
         "quiet": True,
@@ -52,12 +52,11 @@ async def youtube_video(client: Client, message: Message):
             if not filename.endswith(".mp4"):
                 filename = os.path.splitext(filename)[0] + ".mp4"
 
-        # Check size
         file_size = os.path.getsize(filename)
-        max_size = 50 * 1024 * 1024  # 50MB
+        max_size = 50 * 1024 * 1024
         if file_size > max_size:
             os.remove(filename)
-            return await status.edit("❌ The downloaded video is too large to send via bot (limit: 50MB).")
+            return await status.edit("❌ The downloaded video is too large (limit: 50MB).")
 
         await client.send_video(
             chat_id=message.chat.id,
