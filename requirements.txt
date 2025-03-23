@@ -59,3 +59,4 @@ opencv-python
 bing_image_downloader
 lexica-api
 bs4
+git+https://github.com/yt-dlp/yt-dlp.git
