@@ -3,7 +3,7 @@ from pyrogram import Client, filters
 from pyrogram.types import Message
 from pyrogram.enums import ChatAction
 from yt_dlp import YoutubeDL
-from AnonXMusic import app  # Use your Client/app
+from AnonXMusic import app
 
 DOWNLOAD_DIR = "downloads"
 
@@ -17,14 +17,14 @@ YTDL_OPTS = {
     "no_warnings": True,
     "noplaylist": True,
     "merge_output_format": "mp4",
-    "cookies": "cookies.txt",  # <== Confirm this file path is correct!
+    "cookiefile": "cookies.txt",  # <- Must be placed in your bot's root folder
 }
 
 
 @app.on_message(filters.command(["vid", "video"], prefixes=["/", "!"]))
 async def youtube_video(client: Client, message: Message):
     if len(message.command) < 2:
-        return await message.reply("**Please provide a search query.**\n\nExample: `/vid cat videos`")
+        return await message.reply("**Please provide a search query.**\n\nExample: `/vid cute cats`")
 
     query = message.text.split(None, 1)[1]
     await message.reply_chat_action(ChatAction.TYPING)
