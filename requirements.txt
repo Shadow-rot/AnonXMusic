@@ -4,6 +4,7 @@ SpeechRecognition
 pornhub-api==0.2.0
 aiohttp 
 asyncio 
+pytube
 beautifulsoup4
 daxxhub
 deepai
