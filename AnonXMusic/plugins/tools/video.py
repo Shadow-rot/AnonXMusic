@@ -17,7 +17,7 @@ YTDL_OPTS = {
     "no_warnings": True,
     "noplaylist": True,
     "merge_output_format": "mp4",
-    "cookiefile": "cookies.txt",  # <== Confirm this file path is correct!
+    "cookies": "cookies.txt",  # <== Confirm this file path is correct!
 }
 
 
