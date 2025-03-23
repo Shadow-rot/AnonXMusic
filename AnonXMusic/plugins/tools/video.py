@@ -3,7 +3,7 @@ from pyrogram import Client, filters
 from pyrogram.types import Message
 from pyrogram.enums import ChatAction
 from yt_dlp import YoutubeDL
-from AnonXMusic import app  # Replace with your bot's Client if needed
+from AnonXMusic import app  # Use your Client/app
 
 DOWNLOAD_DIR = "downloads"
 
@@ -17,7 +17,7 @@ YTDL_OPTS = {
     "no_warnings": True,
     "noplaylist": True,
     "merge_output_format": "mp4",
-    "cookiefile": "cookies.txt",  # This enables logged-in downloads
+    "cookiefile": "cookies.txt",  # <== Confirm this file path is correct!
 }
 
 
@@ -34,36 +34,32 @@ async def youtube_video(client: Client, message: Message):
         "skip_download": True,
         "extract_flat": True,
         "default_search": "ytsearch1",
-        "cookiefile": "cookies.txt",  # Pass cookies here too
+        "cookiefile": "cookies.txt"
     }
 
     try:
-        # Search YouTube
         with YoutubeDL(search_opts) as ydl:
-            search_result = ydl.extract_info(f"ytsearch1:{query}", download=False)
-            if not search_result or not search_result.get("entries"):
-                return await message.reply("No results found.")
+            result = ydl.extract_info(f"ytsearch1:{query}", download=False)
+            entries = result.get("entries")
+            if not entries:
+                return await message.reply("No videos found.")
 
-            video_data = search_result["entries"][0]
-            video_url = f"https://www.youtube.com/watch?v={video_data['id']}"
-            video_title = video_data.get("title", "video")
+            video = entries[0]
+            video_url = f"https://www.youtube.com/watch?v={video['id']}"
+            video_title = video.get("title", "video")
 
         status = await message.reply(f"**Downloading:** `{video_title}`")
 
-        # Download video with yt-dlp and cookies
         with YoutubeDL(YTDL_OPTS) as ydl:
             info = ydl.extract_info(video_url, download=True)
             filename = ydl.prepare_filename(info)
             if not filename.endswith(".mp4"):
                 filename = os.path.splitext(filename)[0] + ".mp4"
 
-        # Check file size
-        file_size = os.path.getsize(filename)
-        max_size = 50 * 1024 * 1024  # 50MB Telegram bot limit
-
-        if file_size > max_size:
+        size = os.path.getsize(filename)
+        if size > 50 * 1024 * 1024:
             os.remove(filename)
-            return await status.edit("❌ The downloaded video is too large to send (max 50MB).")
+            return await status.edit("❌ Video is larger than 50MB. Can't send.")
 
         await client.send_chat_action(message.chat.id, ChatAction.UPLOAD_VIDEO)
 
@@ -78,4 +74,4 @@ async def youtube_video(client: Client, message: Message):
         await status.delete()
 
     except Exception as e:
-        await message.reply(f"❌ Error: `{str(e)}`")
+        await message.reply(f"❌ Error:\n`{e}`")
