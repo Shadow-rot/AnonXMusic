@@ -1,4 +1,4 @@
-import base64
+"""import base64
 import mimetypes
 import os
 
@@ -241,4 +241,4 @@ async def upscale_handler(client: Client, message: Message):
     else:
         await message.reply_text(
             "Please reply to the image you want to upscale with the /enhance command."
-        )
+        )"""
