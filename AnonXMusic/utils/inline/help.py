@@ -6,8 +6,8 @@ from AnonXMusic import app
 
 
 def help_pannel(_, PAGE: int = 1):
-    first = [InlineKeyboardButton(text=_["CLOSE_BUTTON"], callback_data=f"close")]
-    
+    first = [InlineKeyboardButton(text=_["CLOSE_BUTTON"], callback_data="close")]
+
     if PAGE == 1:
         upl = InlineKeyboardMarkup(
             [
@@ -94,3 +94,27 @@ async def help_callback(client, callback_query):
     else:
         # Handle other help buttons normally
         pass
+
+
+def help_back_markup(_):
+    """Returns a keyboard markup for going back."""
+    return InlineKeyboardMarkup(
+        [
+            [
+                InlineKeyboardButton(text=_["BACK_BUTTON"], callback_data="settings_back_helper"),
+            ]
+        ]
+    )
+
+
+def private_help_panel(_):
+    """Returns a private help panel button."""
+    return InlineKeyboardMarkup(
+        [
+            [
+                InlineKeyboardButton(
+                    text=_["S_B_4"], url=f"https://t.me/{app.username}?start=help"
+                ),
+            ]
+        ]
+    )
