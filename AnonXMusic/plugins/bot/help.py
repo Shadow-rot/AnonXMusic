@@ -4,7 +4,7 @@ from pyrogram import filters, types
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 
 from AnonXMusic import app
-from AnonXMusic.utils import help_pannel
+from AnonXMusic.utils import     private_help_panel
 from AnonXMusic.utils.database import get_lang
 from AnonXMusic.utils.decorators.language import LanguageStart, languageCB
 from AnonXMusic.utils.inline.help import (
