@@ -8,10 +8,10 @@ from AnonXMusic.utils import help_pannel
 from AnonXMusic.utils.database import get_lang
 from AnonXMusic.utils.decorators.language import LanguageStart, languageCB
 from AnonXMusic.utils.inline.help import ( 
-help_back_markup,
-private_help_panel,
-first_page,
-second_page 
+    help_back_markup,
+    private_help_panel,
+    first_page,
+    second_page  # Ensure second_page is imported
 )
 from config import BANNED_USERS, START_IMG_URL, SUPPORT_CHAT
 from strings import get_string, helpers
@@ -31,7 +31,7 @@ async def helper_private(
         chat_id = update.message.chat.id
         language = await get_lang(chat_id)
         _ = get_string(language)
-        keyboard = private_help_pannel(_)
+        keyboard = private_help_panel(_)
         await update.edit_message_text(
             _["help_1"].format(SUPPORT_CHAT), reply_markup=keyboard
         )
@@ -42,7 +42,7 @@ async def helper_private(
             pass
         language = await get_lang(update.chat.id)
         _ = get_string(language)
-        keyboard =private_help_pannel(_)
+        keyboard = private_help_panel(_)
         await update.reply_video(
             video=START_IMG_URL,
             caption=_["help_1"].format(SUPPORT_CHAT),
@@ -62,34 +62,53 @@ async def help_com_group(client, message: Message, _):
 async def helper_cb(client, CallbackQuery, _):
     callback_data = CallbackQuery.data.strip()
     cb = callback_data.split(None, 1)[1]
+
+    # Navigation between help pages
+    if cb == "next":
+        await CallbackQuery.edit_message_text(
+            "🔹 **Help - Page 2** 🔹", reply_markup=second_page(_)
+        )
+        return
+    elif cb == "back":
+        await CallbackQuery.edit_message_text(
+            "🔹 **Help - Page 1** 🔹", reply_markup=private_help_panel(_)
+        )
+        return
+
     keyboard = help_back_markup(_)
-    if cb == "hb1":
-        await CallbackQuery.edit_message_text(helpers.HELP_1, reply_markup=keyboard)
-    elif cb == "hb2":
-        await CallbackQuery.edit_message_text(helpers.HELP_2, reply_markup=keyboard)
-    elif cb == "hb3":
-        await CallbackQuery.edit_message_text(helpers.HELP_3, reply_markup=keyboard)
-    elif cb == "hb4":
-        await CallbackQuery.edit_message_text(helpers.HELP_4, reply_markup=keyboard)
-    elif cb == "hb5":
-        await CallbackQuery.edit_message_text(helpers.HELP_5, reply_markup=keyboard)
-    elif cb == "hb6":
-        await CallbackQuery.edit_message_text(helpers.HELP_6, reply_markup=keyboard)
-    elif cb == "hb7":
-        await CallbackQuery.edit_message_text(helpers.HELP_7, reply_markup=keyboard)
-    elif cb == "hb8":
-        await CallbackQuery.edit_message_text(helpers.HELP_8, reply_markup=keyboard)
-    elif cb == "hb9":
-        await CallbackQuery.edit_message_text(helpers.HELP_9, reply_markup=keyboard)
-    elif cb == "hb10":
-        await CallbackQuery.edit_message_text(helpers.HELP_10, reply_markup=keyboard)
-    elif cb == "hb11":
-        await CallbackQuery.edit_message_text(helpers.HELP_11, reply_markup=keyboard)
-    elif cb == "hb12":
-        await CallbackQuery.edit_message_text(helpers.HELP_12, reply_markup=keyboard)
-    elif cb == "hb13":
-        await CallbackQuery.edit_message_text(helpers.HELP_13, reply_markup=keyboard)
-    elif cb == "hb14":
-        await CallbackQuery.edit_message_text(helpers.HELP_14, reply_markup=keyboard)
-    elif cb == "hb15":
-        await CallbackQuery.edit_message_text(helpers.HELP_15, reply_markup=keyboard)
+
+    help_dict = {
+        "hb1": helpers.HELP_1,
+        "hb2": helpers.HELP_2,
+        "hb3": helpers.HELP_3,
+        "hb4": helpers.HELP_4,
+        "hb5": helpers.HELP_5,
+        "hb6": helpers.HELP_6,
+        "hb7": helpers.HELP_7,
+        "hb8": helpers.HELP_8,
+        "hb9": helpers.HELP_9,
+        "hb10": helpers.HELP_10,
+        "hb11": helpers.HELP_11,
+        "hb12": helpers.HELP_12,
+        "hb13": helpers.HELP_13,
+        "hb14": helpers.HELP_14,
+        "hb15": helpers.HELP_15,
+        "hb16": helpers.HELP_16,
+        "hb17": helpers.HELP_17,
+        "hb18": helpers.HELP_18,
+        "hb19": helpers.HELP_19,
+        "hb20": helpers.HELP_20,
+        "hb21": helpers.HELP_21,
+        "hb22": helpers.HELP_22,
+        "hb23": helpers.HELP_23,
+        "hb24": helpers.HELP_24,
+        "hb25": helpers.HELP_25,
+        "hb26": helpers.HELP_26,
+        "hb27": helpers.HELP_27,
+        "hb28": helpers.HELP_28,
+        "hb29": helpers.HELP_29,
+        "hb30": helpers.HELP_30,
+    }
+
+    if cb in help_dict:
+        await CallbackQuery.edit_message_text(help_dict[cb], reply_markup=keyboard)
