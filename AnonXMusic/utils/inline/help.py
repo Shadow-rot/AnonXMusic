@@ -5,16 +5,9 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from AnonXMusic import app
 
 
-def help_pannel(_, START: Union[bool, int] = None, PAGE: int = 1):
+def help_pannel(_, PAGE: int = 1):
     first = [InlineKeyboardButton(text=_["CLOSE_BUTTON"], callback_data=f"close")]
-    second = [
-        InlineKeyboardButton(
-            text=_["BACK_BUTTON"],
-            callback_data=f"settingsback_helper",
-        ),
-    ]
-    mark = second if START else first
-
+    
     if PAGE == 1:
         upl = InlineKeyboardMarkup(
             [
@@ -44,9 +37,9 @@ def help_pannel(_, START: Union[bool, int] = None, PAGE: int = 1):
                     InlineKeyboardButton(text=_["H_B_15"], callback_data="help_callback hb15"),
                 ],
                 [
-                    InlineKeyboardButton(text="➡ Next", callback_data="help_callback next"),
+                    InlineKeyboardButton(text="➡ Next", callback_data="help_next"),
                 ],
-                mark,
+                first,
             ]
         )
     else:
@@ -78,37 +71,26 @@ def help_pannel(_, START: Union[bool, int] = None, PAGE: int = 1):
                     InlineKeyboardButton(text=_["H_B_30"], callback_data="help_callback hb30"),
                 ],
                 [
-                    InlineKeyboardButton(text="⬅ Back", callback_data="help_callback back"),
-                    InlineKeyboardButton(text="🏠 Main Menu", callback_data="help_callback main"),
+                    InlineKeyboardButton(text="⬅ Back", callback_data="help_back"),
+                    InlineKeyboardButton(text="🏠 Main Menu", callback_data="help_main"),
                 ],
-                mark,
+                first,
             ]
         )
 
     return upl
 
 
-def help_back_markup(_):
-    upl = InlineKeyboardMarkup(
-        [
-            [
-                InlineKeyboardButton(
-                    text=_["BACK_BUTTON"],
-                    callback_data=f"settings_back_helper",
-                ),
-            ]
-        ]
-    )
-    return upl
+@app.on_callback_query()
+async def help_callback(client, callback_query):
+    data = callback_query.data
 
-
-def private_help_panel(_):
-    buttons = [
-        [
-            InlineKeyboardButton(
-                text=_["S_B_4"],
-                url=f"https://t.me/{app.username}?start=help",
-            ),
-        ],
-    ]
-    return buttons
+    if data == "help_next":
+        await callback_query.message.edit_reply_markup(help_pannel(_, PAGE=2))
+    elif data == "help_back":
+        await callback_query.message.edit_reply_markup(help_pannel(_, PAGE=1))
+    elif data == "help_main":
+        await callback_query.message.edit_reply_markup(help_pannel(_, PAGE=1))  # Set to main panel
+    else:
+        # Handle other help buttons normally
+        pass
