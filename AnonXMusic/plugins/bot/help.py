@@ -10,8 +10,8 @@ from AnonXMusic.utils.decorators.language import LanguageStart, languageCB
 from AnonXMusic.utils.inline.help import( 
 help_back_markup,
 private_help_panel,
-first_page
-second_page
+first_page,
+second_page )
 from config import BANNED_USERS, START_IMG_URL, SUPPORT_CHAT
 from strings import get_string, helpers
 
