@@ -6,7 +6,12 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 from AnonXMusic import app
 from AnonXMusic.utils.database import get_lang
 from AnonXMusic.utils.decorators.language import LanguageStart, languageCB
-from AnonXMusic.utils.inline.help import help_back_markup, private_help_panel
+from AnonXMusic.utils.inline.help import (
+    first_page,
+    second_page,
+    help_back_markup,
+    private_help_panel
+)
 from config import BANNED_USERS, START_IMG_URL, SUPPORT_CHAT
 from strings import get_string, helpers
 
