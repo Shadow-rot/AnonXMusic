@@ -38,11 +38,12 @@ def help_pannel(_, page: int = 1, START: Union[bool, int] = None):
                 InlineKeyboardButton(text=_["H_B_14"], callback_data="help_callback hb14"),
                 InlineKeyboardButton(text=_["H_B_15"], callback_data="help_callback hb15"),
             ],
-            [
-                InlineKeyboardButton(text="Next ", callback_data="help_page_2"),
-            ],
-            mark,
-        ]
+                navigation_buttons = [
+        InlineKeyboardButton(text="๏ ᴍᴇɴᴜ ๏", callback_data="back_to_main"),
+        InlineKeyboardButton(text="๏ ɴᴇxᴛ ๏", callback_data="help_next_2")
+    ]
+    buttons.append(navigation_buttons)
+    return InlineKeyboardMarkup(buttons)
     else:
         buttons = [
             [
