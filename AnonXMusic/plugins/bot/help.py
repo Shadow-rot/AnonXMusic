@@ -31,7 +31,7 @@ async def helper_private(
         chat_id = update.message.chat.id
         language = await get_lang(chat_id)
         _ = get_string(language)
-        keyboard = help_pannel(_, True)
+        keyboard = first_page(_, True)
         await update.edit_message_text(
             _["help_1"].format(SUPPORT_CHAT), reply_markup=keyboard
         )
@@ -42,7 +42,7 @@ async def helper_private(
             pass
         language = await get_lang(update.chat.id)
         _ = get_string(language)
-        keyboard = help_pannel(_)
+        keyboard = private_help_pannel(_)
         await update.reply_video(
             video=START_IMG_URL,
             caption=_["help_1"].format(SUPPORT_CHAT),
