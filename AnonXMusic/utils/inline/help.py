@@ -1,8 +1,10 @@
 from typing import Union
-
+from pyrogram import Client, filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+
 from AnonXMusic import app
 
+# Function for the help panel with pagination
 def help_pannel(_, PAGE: int = 1):
     first = [InlineKeyboardButton(text=_["CLOSE_BUTTON"], callback_data="close")]
 
@@ -78,32 +80,21 @@ def help_pannel(_, PAGE: int = 1):
 
     return upl
 
+# Function for back button
+def help_back_markup():
+    return InlineKeyboardMarkup(
+        [[InlineKeyboardButton(text="⬅ Back", callback_data="help_back")]]
+    )
 
-@app.on_callback_query()
+# Callback query handler
+@app.on_callback_query(filters.regex("^help_(next|back|main)$"))
 async def help_callback(client, callback_query):
     data = callback_query.data
-
-    # Fetch translations (if needed)
-    _ = {
-        "CLOSE_BUTTON": "❌ Close",
-        "BACK_BUTTON": "⬅ Back",
-        "H_B_1": "Help 1", "H_B_2": "Help 2", "H_B_3": "Help 3",
-        "H_B_4": "Help 4", "H_B_5": "Help 5", "H_B_6": "Help 6",
-        "H_B_7": "Help 7", "H_B_8": "Help 8", "H_B_9": "Help 9",
-        "H_B_10": "Help 10", "H_B_11": "Help 11", "H_B_12": "Help 12",
-        "H_B_13": "Help 13", "H_B_14": "Help 14", "H_B_15": "Help 15",
-        "H_B_16": "Help 16", "H_B_17": "Help 17", "H_B_18": "Help 18",
-        "H_B_19": "Help 19", "H_B_20": "Help 20", "H_B_21": "Help 21",
-        "H_B_22": "Help 22", "H_B_23": "Help 23", "H_B_24": "Help 24",
-        "H_B_25": "Help 25", "H_B_26": "Help 26", "H_B_27": "Help 27",
-        "H_B_28": "Help 28", "H_B_29": "Help 29", "H_B_30": "Help 30",
-    }
+    _ = {"CLOSE_BUTTON": "✖ Close"}  # Define default translations
 
     if data == "help_next":
         await callback_query.message.edit_reply_markup(help_pannel(_, PAGE=2))
     elif data == "help_back":
         await callback_query.message.edit_reply_markup(help_pannel(_, PAGE=1))
     elif data == "help_main":
-        await callback_query.message.edit_reply_markup(help_pannel(_, PAGE=1))  # Set to main panel
-    else:
-        pass  # Handle other buttons if needed
+        await callback_query.message.edit_reply_markup(help_pannel(_, PAGE=1))  # Main panel
