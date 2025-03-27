@@ -71,3 +71,13 @@ def help_pannel(_, START: Union[bool, int] = None):
         ]
     )
     return upl
+def private_help_panel():
+buttons = [
+[
+InlineKeyboardButton(
+text=["S_B_4"],
+url=f"https://t.me/{app.username}?start=help",
+),
+],
+]
+return buttons
