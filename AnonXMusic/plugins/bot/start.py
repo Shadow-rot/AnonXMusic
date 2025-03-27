@@ -19,7 +19,8 @@ from AnonXMusic.utils.database import (
 )
 from AnonXMusic.utils.decorators.language import LanguageStart
 from AnonXMusic.utils.formatters import get_readable_time
-from AnonXMusic.utils.inline import private_help_pannel, private_panel, start_panel
+from AnonXMusic.utils.inline.start import private_panel, start_panel
+from AnonXMusic.utils.inline.help import first_page
 from config import BANNED_USERS, START_IMG_URL
 from strings import get_string
 
