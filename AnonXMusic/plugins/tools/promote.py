@@ -2,7 +2,7 @@ from pyrogram import Client, filters, enums
 from pyrogram.types import ChatPrivileges
 from pyrogram.errors import ChatAdminRequired
 from functools import wraps
-from AnonXMusic import app
+from ANNIEMUSIC import app
 
 def mention(user_id, name):
     return f"{user.mention}"
