@@ -14,6 +14,7 @@ dnspython
 ffmpeg-python
 gitpython
 hachoir
+googlesearch-python
 Faker
 pydub
 pycountry
