@@ -60,5 +60,3 @@ opencv-python
 bing_image_downloader
 bs4
 git+https://github.com/yt-dlp/yt-dlp.git
-telethon==1.39.0
-git+https://github.com/TEAMPURVI/PurviAPI
