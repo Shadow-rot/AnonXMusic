@@ -169,11 +169,9 @@ async def kang(client, message: Message):
             limit += 1
             break
 
-        await msg.edit(
-            "Sticker Kanged To [Pack](t.me/addstickers/{})\nEmoji: {}".format(
-                packname, sticker_emoji
-            )
-        )
+            await msg.edit(stylize_text(text), reply_markup=InlineKeyboardMarkup([
+        [InlineKeyboardButton("View Pack", url=f"https://t.me/addstickers/{pack_name}")]
+    ]))
     except (PeerIdInvalid, UserIsBlocked):
         keyboard = InlineKeyboardMarkup(
             [[InlineKeyboardButton(text="Start", url=f"t.me/{BOT_USERNAME}")]]
