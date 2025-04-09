@@ -13,16 +13,15 @@ from pyrogram.errors import (
     UserIsBlocked,
 )
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
+
 from AnonXMusic import app
 from config import BOT_USERNAME
 from AnonXMusic.utils.errors import capture_err
-
 from AnonXMusic.utils.files import (
     get_document_from_file_id,
     resize_file_to_sticker_size,
     upload_document,
 )
-
 from AnonXMusic.utils.stickerset import (
     add_sticker_to_set,
     create_sticker,
@@ -30,7 +29,7 @@ from AnonXMusic.utils.stickerset import (
     get_sticker_set_by_name,
 )
 
-MAX_STICKERS = 120  # Telegram max stickers per set
+MAX_STICKERS = 120
 SUPPORTED_TYPES = ["jpeg", "png", "webp"]
 
 # /get_sticker command
@@ -140,7 +139,6 @@ async def kang(client, message: Message):
                     await add_sticker_to_set(client, stickerset, sticker)
                 except StickerEmojiInvalid:
                     return await msg.edit("[ERROR]: Invalid emoji in argument.")
-
             break
 
         await msg.edit(
@@ -149,6 +147,7 @@ async def kang(client, message: Message):
                 [InlineKeyboardButton("View Pack", url=f"https://t.me/addstickers/{packname}")]
             ])
         )
+
     except (PeerIdInvalid, UserIsBlocked):
         keyboard = InlineKeyboardMarkup([
             [InlineKeyboardButton("Start", url=f"https://t.me/{BOT_USERNAME}")]
