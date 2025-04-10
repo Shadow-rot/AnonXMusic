@@ -17,6 +17,7 @@ hachoir
 googlesearch-python
 Faker
 pydub
+lexica-api
 pycountry
 heroku3
 apscheduler
