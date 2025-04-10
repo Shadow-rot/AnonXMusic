@@ -7,11 +7,11 @@ from pyrogram import filters
 load_dotenv()
 
 # Get this value from my.telegram.org/apps
-API_ID = int(getenv("27308992"))
-API_HASH = getenv("e4b9957efa6ed62f60d9f30d7bd40c044")
+API_ID = int(getenv("None"))
+API_HASH = getenv("None")
 
 # Get your token from @BotFather on Telegram.
-BOT_TOKEN = getenv("8125209735:AAGD13oRrT5idLn1MSVNrQvxdbG3jJPB6mM")
+BOT_TOKEN = getenv("None")
 
 # Get your bot username without '@'
 BOT_USERNAME = getenv("BOT_USERNAME", "Sahista_sexy_bot")
