@@ -1,19 +1,15 @@
 import datetime
-from pyrogram import Client, filters
+import asyncio
+from pyrogram import Client, filters, idle
 from pyrogram.types import (
     Message,
     InlineKeyboardMarkup,
     InlineKeyboardButton,
     CallbackQuery,
 )
-
-# Assuming you have a config.py file with your API values and OWNER_ID
 from config import OWNER_ID, API_ID, API_HASH, BOT_TOKEN
 
-# Initialize bot
 app = Client("vcbot", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
-
-# Dictionary to track VC start times
 vc_start_times = {}
 
 # Voice chat started
@@ -35,7 +31,7 @@ async def on_vc_end(_, msg: Message):
     else:
         await msg.reply("Voice chat ended.\nDuration: Unknown")
 
-# When users are invited to the voice chat
+# Invited to voice chat
 @app.on_message(filters.video_chat_members_invited)
 async def on_user_invited(client: Client, message: Message):
     inviter = message.from_user.mention
@@ -59,7 +55,7 @@ async def on_user_invited(client: Client, message: Message):
         except Exception as e:
             print(f"Error: {e}")
 
-# Handle mute/unmute button actions
+# Handle mute/unmute actions
 @app.on_callback_query()
 async def handle_callback(client: Client, callback: CallbackQuery):
     data = callback.data
@@ -75,7 +71,7 @@ async def handle_callback(client: Client, callback: CallbackQuery):
                 await client.restrict_chat_member(chat_id, user_id, can_send_messages=True)
                 await callback.answer("Unmuted")
         except Exception as e:
-            await callback.answer("Failed: Bot might not have sufficient rights.")
+            await callback.answer("Failed: Check bot permissions.")
 
 # Math command
 @app.on_message(filters.command("math"))
@@ -89,11 +85,19 @@ def calculate_math(_, message: Message):
     except:
         message.reply("Invalid expression")
 
-# Leave group command (owner only)
+# Leave group command for OWNER only
 @app.on_message(filters.command("leavegroup") & filters.user(OWNER_ID))
 async def leave_group(_, message: Message):
     await message.reply("Successfully leaving the group.")
     await app.leave_chat(message.chat.id, delete=True)
 
-# Run the bot
-app.run()
+# Start and run bot using async loop
+async def main():
+    await app.start()
+    print("Bot is running...")
+    await idle()
+    await app.stop()
+    print("Bot stopped.")
+
+if __name__ == "__main__":
+    asyncio.run(main())
