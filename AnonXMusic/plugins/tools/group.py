@@ -1,6 +1,6 @@
 import datetime
 from pyrogram import Client, filters
-from pyrogram.types import Message
+from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 from AnonXMusic import app
 from config import OWNER_ID
 
@@ -8,13 +8,13 @@ from config import OWNER_ID
 vc_start_times = {}
 
 @app.on_message(filters.video_chat_started)
-async def brah(_, msg):
+async def vc_started(_, msg):
     chat_id = msg.chat.id
     vc_start_times[chat_id] = datetime.datetime.now()
-    await msg.reply("ᴠᴏɪᴄᴇ ᴄʜᴀᴛ sᴛᴀʀᴛᴇᴅ")
+    await msg.reply("Voice chat started.")
 
 @app.on_message(filters.video_chat_ended)
-async def brah2(_, msg):
+async def vc_ended(_, msg):
     chat_id = msg.chat.id
     start_time = vc_start_times.pop(chat_id, None)
     if start_time:
@@ -23,38 +23,62 @@ async def brah2(_, msg):
         hours, remainder = divmod(int(seconds), 3600)
         minutes, seconds = divmod(remainder, 60)
         time_str = f"{hours}h {minutes}m {seconds}s"
-        await msg.reply(f"ᴠᴏɪᴄᴇ ᴄʜᴀᴛ ᴇɴᴅᴇᴅ\nᴅᴜʀᴀᴛɪᴏɴ: {time_str}")
+        await msg.reply(f"Voice chat ended\nDuration: {time_str}")
     else:
-        await msg.reply("ᴠᴏɪᴄᴇ ᴄʜᴀᴛ ᴇɴᴅᴇᴅ\nᴅᴜʀᴀᴛɪᴏɴ: ᴜɴᴋɴᴏᴡɴ")
+        await msg.reply("Voice chat ended\nDuration: Unknown")
 
 @app.on_message(filters.video_chat_members_invited)
-async def brah3(app: Client, message: Message):
-    text = f"{message.from_user.mention} ɪɴᴠɪᴛᴇᴅ "
-    x = 0
-    for user in message.video_chat_members_invited.users:
+async def on_user_invited(app: Client, message: Message):
+    inviter = message.from_user.mention
+    invited_users = message.video_chat_members_invited.users
+
+    for user in invited_users:
         try:
-            text += f"{user.mention} "
-            x += 1
+            mention = user.mention
+            user_id = user.id
+            text = (
+                f"{mention} (ID: `{user_id}`) joined the voice chat.\n"
+                f"Invited by: {inviter}"
+            )
+
+            keyboard = InlineKeyboardMarkup([
+                [InlineKeyboardButton("Mute", callback_data=f"mute_{user_id}"),
+                 InlineKeyboardButton("Unmute", callback_data=f"unmute_{user_id}")]
+            ])
+
+            await message.reply(text, reply_markup=keyboard)
         except Exception:
             pass
-    try:
-        await message.reply(f"{text} 😉")
-    except:
-        pass
+
+@app.on_callback_query()
+async def handle_vc_controls(client, callback_query: CallbackQuery):
+    data = callback_query.data
+    if data.startswith("mute_") or data.startswith("unmute_"):
+        user_id = int(data.split("_")[1])
+        chat_id = callback_query.message.chat.id
+
+        try:
+            if data.startswith("mute_"):
+                await client.restrict_chat_member(chat_id, user_id, can_send_messages=False)
+                await callback_query.answer("Muted")
+            else:
+                await client.restrict_chat_member(chat_id, user_id, can_send_messages=True)
+                await callback_query.answer("Unmuted")
+        except Exception:
+            await callback_query.answer("Failed. Bot may need admin rights.")
 
 @app.on_message(filters.command("math", prefixes="/"))
 def calculate_math(client, message):   
     expression = message.text.split("/math ", 1)[1]
     try:        
         result = eval(expression)
-        response = f"ᴛʜᴇ ʀᴇsᴜʟᴛ ɪs : {result}"
+        response = f"The result is: {result}"
     except:
-        response = "ɪɴᴠᴀʟɪᴅ ᴇxᴘʀᴇssɪᴏɴ"
+        response = "Invalid expression"
     message.reply(response)
 
 @app.on_message(filters.command("leavegroup") & filters.user(OWNER_ID))
 async def bot_leave(_, message):
     chat_id = message.chat.id
-    text = f"sᴜᴄᴄᴇssғᴜʟʟʏ   ʟᴇғᴛ  !!."
-    await message.reply_text(text)
+    await message.reply_text("Successfully left.")
     await app.leave_chat(chat_id=chat_id, delete=True)
