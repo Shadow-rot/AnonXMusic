@@ -6,21 +6,25 @@ from pyrogram.types import (
     InlineKeyboardButton,
     CallbackQuery,
 )
-from AnonXMusic import app
 
+# Assuming you have a config.py file with your API values and OWNER_ID
+from config import OWNER_ID, API_ID, API_HASH, BOT_TOKEN
 
+# Initialize bot
+app = Client("vcbot", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
 
+# Dictionary to track VC start times
 vc_start_times = {}
 
 # Voice chat started
 @app.on_message(filters.video_chat_started)
-async def on_vc_start(_, msg):
+async def on_vc_start(_, msg: Message):
     vc_start_times[msg.chat.id] = datetime.datetime.now()
     await msg.reply("Voice chat started.")
 
 # Voice chat ended
 @app.on_message(filters.video_chat_ended)
-async def on_vc_end(_, msg):
+async def on_vc_end(_, msg: Message):
     start_time = vc_start_times.pop(msg.chat.id, None)
     if start_time:
         duration = datetime.datetime.now() - start_time
@@ -91,4 +95,5 @@ async def leave_group(_, message: Message):
     await message.reply("Successfully leaving the group.")
     await app.leave_chat(message.chat.id, delete=True)
 
+# Run the bot
 app.run()
