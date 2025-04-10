@@ -31,6 +31,11 @@ async def google_img_search(client: Client, message: Message):
         downloader.download(query, limit=lim, output_dir=download_dir, adult_filter_off=True, force_replace=True, timeout=60)
         
         images_dir = os.path.join(download_dir, query)
+
+        # Check if the directory exists before listing files
+        if not os.path.isdir(images_dir):
+            raise Exception(f"Directory {images_dir} does not exist or no images were downloaded.")
+
         lst = [os.path.join(images_dir, img) for img in os.listdir(images_dir) if img.endswith((".jpg", ".png"))][:lim]
         
         if not lst:
