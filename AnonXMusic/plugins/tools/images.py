@@ -32,10 +32,11 @@ async def google_img_search(client: Client, message: Message):
         
         images_dir = os.path.join(download_dir, query)
 
-        # Check if the directory exists before listing files
+        # Ensure the directory exists (check using os.path.isdir)
         if not os.path.isdir(images_dir):
             raise Exception(f"Directory {images_dir} does not exist or no images were downloaded.")
 
+        # List images and check if they are valid images
         lst = [os.path.join(images_dir, img) for img in os.listdir(images_dir) if img.endswith((".jpg", ".png"))][:lim]
         
         if not lst:
@@ -44,6 +45,7 @@ async def google_img_search(client: Client, message: Message):
         return await message.reply(f"Error during download: {e}")
 
     try:
+        # Send media group to the chat
         await app.send_media_group(
             chat_id=chat_id,
             media=[InputMediaPhoto(media=img) for img in lst],
@@ -52,4 +54,5 @@ async def google_img_search(client: Client, message: Message):
     except Exception as e:
         return await message.reply(f"Error sending images: {e}")
     finally:
+        # Clean up the downloaded images folder after usage
         shutil.rmtree(images_dir, ignore_errors=True)
