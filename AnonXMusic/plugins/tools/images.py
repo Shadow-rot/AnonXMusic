@@ -15,44 +15,39 @@ async def google_img_search(client: Client, message: Message):
     except IndexError:
         return await message.reply("Provide an image query to search!")
 
-    # Parse lim= value
     lim = findall(r"lim=\d+", query)
     try:
         lim = int(lim[0].replace("lim=", ""))
-        query = query.replace(f"lim={lim}", "").strip()
+        query = query.replace(f"lim={lim}", "")
     except IndexError:
-        lim = 7
+        lim = 5  # Default limit to 5 images
 
     download_dir = "downloads"
 
     try:
-        # Start downloading images
-        await message.reply("Scraping images, please wait...")
-        downloader.download(query, limit=lim, output_dir=download_dir, adult_filter_off=True, force_replace=True, timeout=60)
-        
-        images_dir = str(os.path.join(download_dir, query))  # Explicitly convert Path to string
-
-        # Ensure the directory exists (check using os.path.isdir)
-        if not os.path.isdir(images_dir):
-            raise Exception(f"Directory {images_dir} does not exist or no images were downloaded.")
-
-        # List images and check if they are valid images
-        lst = [os.path.join(images_dir, img) for img in os.listdir(images_dir) if img.endswith((".jpg", ".png"))][:lim]
-        
-        if not lst:
+        downloader.download(query, limit=lim, output_dir=download_dir, adult_filter_off=True, force_replace=False, timeout=60)
+        images_dir = os.path.join(download_dir, query)
+        if not os.listdir(images_dir):
             raise Exception("No images were downloaded.")
+        lst = [os.path.join(images_dir, img) for img in os.listdir(images_dir)][:lim]  # Ensure we only take the number of images specified by lim
     except Exception as e:
-        return await message.reply(f"Error during download: {e}")
+        return await message.reply(f"Error in downloading images: {e}")
+
+    msg = await message.reply("sha Scrapping images...")
+
+    count = 0
+    for img in lst:
+        count += 1
+        await msg.edit(f"=> Annie owo scrapped images {count}")
 
     try:
-        # Send media group to the chat
         await app.send_media_group(
             chat_id=chat_id,
             media=[InputMediaPhoto(media=img) for img in lst],
             reply_to_message_id=message.id
         )
+        shutil.rmtree(images_dir)
+        await msg.delete()
     except Exception as e:
-        return await message.reply(f"Error sending images: {e}")
-    finally:
-        # Clean up the downloaded images folder after usage
-        shutil.rmtree(images_dir, ignore_errors=True)
+        await msg.delete()
+        return await message.reply(f"Error in sending images: {e}")
