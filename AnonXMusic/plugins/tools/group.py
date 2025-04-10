@@ -1,22 +1,36 @@
 import datetime
+import json
+import os
 from pyrogram import Client, filters
 from pyrogram.types import Message
 from AnonXMusic import app
 from config import OWNER_ID
 
-# Dictionary to store VC start times per chat
-vc_start_times = {}
+VC_FILE = "vc_start_times.json"
+
+# Load VC start times from file
+if os.path.exists(VC_FILE):
+    with open(VC_FILE, "r") as f:
+        vc_start_times = {int(k): datetime.datetime.fromisoformat(v) for k, v in json.load(f).items()}
+else:
+    vc_start_times = {}
+
+def save_vc_times():
+    with open(VC_FILE, "w") as f:
+        json.dump({k: v.isoformat() for k, v in vc_start_times.items()}, f)
 
 @app.on_message(filters.video_chat_started)
 async def brah(_, msg):
     chat_id = msg.chat.id
     vc_start_times[chat_id] = datetime.datetime.now()
+    save_vc_times()
     await msg.reply("ᴠᴏɪᴄᴇ ᴄʜᴀᴛ sᴛᴀʀᴛᴇᴅ")
 
 @app.on_message(filters.video_chat_ended)
 async def brah2(_, msg):
     chat_id = msg.chat.id
     start_time = vc_start_times.pop(chat_id, None)
+    save_vc_times()
     if start_time:
         duration = datetime.datetime.now() - start_time
         seconds = duration.total_seconds()
