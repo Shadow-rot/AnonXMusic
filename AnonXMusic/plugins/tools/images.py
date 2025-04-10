@@ -6,7 +6,7 @@ from pyrogram import Client, filters
 from pyrogram.types import InputMediaPhoto, Message
 from AnonXMusic import app
 
-@app.on_message(filters.command(["img", "image"], prefixes=["/", "!"]))
+@app.on_message(filters.command(["img", "image"], prefixes=["/", "!", "."]))
 async def google_img_search(client: Client, message: Message):
     chat_id = message.chat.id
 
@@ -30,7 +30,7 @@ async def google_img_search(client: Client, message: Message):
         await message.reply("Scraping images, please wait...")
         downloader.download(query, limit=lim, output_dir=download_dir, adult_filter_off=True, force_replace=True, timeout=60)
         
-        images_dir = os.path.join(download_dir, query)
+        images_dir = str(os.path.join(download_dir, query))  # Explicitly convert Path to string
 
         # Ensure the directory exists (check using os.path.isdir)
         if not os.path.isdir(images_dir):
