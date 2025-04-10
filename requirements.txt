@@ -1,4 +1,3 @@
-lexica
 aiofiles
 aiohttp
 asyncio
