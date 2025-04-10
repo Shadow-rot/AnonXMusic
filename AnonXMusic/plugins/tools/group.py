@@ -1,103 +1,82 @@
-import datetime
 import asyncio
+import datetime
 from pyrogram import Client, filters, idle
-from pyrogram.types import (
-    Message,
-    InlineKeyboardMarkup,
-    InlineKeyboardButton,
-    CallbackQuery,
-)
-from config import OWNER_ID, API_ID, API_HASH, BOT_TOKEN
+from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 
-app = Client("vcbot", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
+API_ID = 17944283          # Replace with your values
+API_HASH = "03f2f561ca86def71fe88d3ae16ed529"
+BOT_TOKEN = "7945225070:AAEk4zHWvsawtTmCwUkzk_uulPu9gZEjCxg"
+OWNER_ID = 5147822244       # Replace with your Telegram user ID
+
+app = Client("vc_bot", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
 vc_start_times = {}
 
-# Voice chat started
 @app.on_message(filters.video_chat_started)
-async def on_vc_start(_, msg: Message):
-    vc_start_times[msg.chat.id] = datetime.datetime.now()
-    await msg.reply("Voice chat started.")
+async def on_vc_started(_, message: Message):
+    vc_start_times[message.chat.id] = datetime.datetime.now()
+    await message.reply("Voice chat started.")
 
-# Voice chat ended
 @app.on_message(filters.video_chat_ended)
-async def on_vc_end(_, msg: Message):
-    start_time = vc_start_times.pop(msg.chat.id, None)
-    if start_time:
-        duration = datetime.datetime.now() - start_time
+async def on_vc_ended(_, message: Message):
+    start = vc_start_times.pop(message.chat.id, None)
+    if start:
+        duration = datetime.datetime.now() - start
         total_seconds = int(duration.total_seconds())
-        hours, remainder = divmod(total_seconds, 3600)
-        minutes, seconds = divmod(remainder, 60)
-        await msg.reply(f"Voice chat ended.\nDuration: {hours}h {minutes}m {seconds}s")
+        h, rem = divmod(total_seconds, 3600)
+        m, s = divmod(rem, 60)
+        await message.reply(f"Voice chat ended.\nDuration: {h}h {m}m {s}s")
     else:
-        await msg.reply("Voice chat ended.\nDuration: Unknown")
+        await message.reply("Voice chat ended.\nDuration unknown.")
 
-# Invited to voice chat
 @app.on_message(filters.video_chat_members_invited)
-async def on_user_invited(client: Client, message: Message):
+async def on_invited(_, message: Message):
     inviter = message.from_user.mention
-    invited_users = message.video_chat_members_invited.users
-
-    for user in invited_users:
+    for user in message.video_chat_members_invited.users:
         try:
-            mention = user.mention
-            user_id = user.id
-            text = (
-                f"{mention} (ID: `{user_id}`) joined the voice chat.\n"
-                f"Invited by: {inviter}"
-            )
             keyboard = InlineKeyboardMarkup([
-                [
-                    InlineKeyboardButton("Mute", callback_data=f"mute_{user_id}"),
-                    InlineKeyboardButton("Unmute", callback_data=f"unmute_{user_id}")
-                ]
+                [InlineKeyboardButton("Mute", callback_data=f"mute_{user.id}"),
+                 InlineKeyboardButton("Unmute", callback_data=f"unmute_{user.id}")]
             ])
-            await message.reply(text, reply_markup=keyboard)
+            await message.reply(
+                f"{user.mention} (ID: `{user.id}`) was invited by {inviter}",
+                reply_markup=keyboard
+            )
         except Exception as e:
             print(f"Error: {e}")
 
-# Handle mute/unmute actions
 @app.on_callback_query()
-async def handle_callback(client: Client, callback: CallbackQuery):
-    data = callback.data
-    chat_id = callback.message.chat.id
+async def callback_handler(_, query: CallbackQuery):
+    data = query.data
+    chat_id = query.message.chat.id
+    user_id = int(data.split("_")[1])
+    action = "Muted" if data.startswith("mute") else "Unmuted"
+    try:
+        await app.restrict_chat_member(chat_id, user_id, can_send_messages=(action == "Unmuted"))
+        await query.answer(action)
+    except:
+        await query.answer("Failed. Missing permissions?")
 
-    if data.startswith("mute_") or data.startswith("unmute_"):
-        user_id = int(data.split("_")[1])
-        try:
-            if data.startswith("mute_"):
-                await client.restrict_chat_member(chat_id, user_id, can_send_messages=False)
-                await callback.answer("Muted")
-            else:
-                await client.restrict_chat_member(chat_id, user_id, can_send_messages=True)
-                await callback.answer("Unmuted")
-        except Exception as e:
-            await callback.answer("Failed: Check bot permissions.")
-
-# Math command
 @app.on_message(filters.command("math"))
-def calculate_math(_, message: Message):
+def math_command(_, message: Message):
     if len(message.command) < 2:
         return message.reply("Usage: /math <expression>")
-    expression = message.text.split(" ", 1)[1]
+    expr = message.text.split(" ", 1)[1]
     try:
-        result = eval(expression)
-        message.reply(f"The result is: {result}")
+        result = eval(expr)
+        message.reply(f"Result: {result}")
     except:
-        message.reply("Invalid expression")
+        message.reply("Invalid expression.")
 
-# Leave group command for OWNER only
 @app.on_message(filters.command("leavegroup") & filters.user(OWNER_ID))
-async def leave_group(_, message: Message):
-    await message.reply("Successfully leaving the group.")
-    await app.leave_chat(message.chat.id, delete=True)
+async def leave(_, message: Message):
+    await message.reply("Leaving group...")
+    await app.leave_chat(message.chat.id)
 
-# Start and run bot using async loop
 async def main():
     await app.start()
-    print("Bot is running...")
+    print("Bot is running.")
     await idle()
     await app.stop()
-    print("Bot stopped.")
 
 if __name__ == "__main__":
     asyncio.run(main())
