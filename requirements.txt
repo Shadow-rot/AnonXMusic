@@ -30,3 +30,4 @@ gpytranslate
 telegraph
 emojis
 bing_image_downloader
+nekosbest
