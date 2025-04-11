@@ -37,7 +37,8 @@ commands = {
     "stare": {"emoji": "👀", "text": "stared"},
     "shrug": {"emoji": "🤷", "text": "shrugged"},
     "sleep": {"emoji": "😴", "text": "slept"},
-    "lurk": {"emoji": "👤", "text": "lurking"}
+    "lurk": {"emoji": "👤", "text": "lurking"},
+    "kill": {"emoji": "☠️", "text": "killed"}
 }
 
 async def get_animation(animation_type):
