@@ -32,8 +32,9 @@ async def _filter(client, message):
     content, text, data_type = await GetFIlterMessage(message)
     await add_filter_db(chat_id, filter_name=filter_name, content=content, text=text, data_type=data_type)
     await message.reply(
-        f"Saved filter '{filter_name}'."
-    )
+    f"`Saved filter '{filter_name}'.`",
+    parse_mode="Markdown"
+)
 
 
 @app.on_message(~filters.bot & filters.group, group=4)
