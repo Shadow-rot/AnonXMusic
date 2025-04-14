@@ -86,7 +86,7 @@ async def _filters(client, message):
     filters_list = f'List of filters in {chat_title}:\n'
 
     for filter_ in FILTERS:
-        filters_list += f'- `{filter_}`\n'
+        filters_list += f'- {filter_}\n'
 
     await message.reply(
         filters_list
