@@ -86,7 +86,7 @@ async def _filters(client, message):
     filters_list = f'List of filters in {chat_title}:\n'
 
     for filter_ in FILTERS:
-        filters_list += f'- `{filter_}`\n'
+        filters_list += f'- {filter_}\n'
 
     await message.reply(
         filters_list
@@ -107,7 +107,7 @@ async def stopall(client, message):
     )
 
     await message.reply(
-        text=(f'Are you sure you want to stop **ALL** filters in {chat_title}? This action is irreversible.'),
+        text=(f'Are you sure you want to stop ALL filters in {chat_title}? This action is irreversible.'),
         reply_markup=KEYBOARD
     )
 
