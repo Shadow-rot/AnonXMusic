@@ -2,7 +2,7 @@ import re
 from AnonXMusic import app
 from config import BOT_USERNAME
 from AnonXMusic.utils.sha_ban import admin_filter
-from AnonXMusic.mongo.filtersdb import *
+from AnonXMusic.utils.filtersdb import *
 from AnonXMusic.utils.filters_func import GetFIlterMessage, get_text_reason, SendFilterMessage
 from AnonXMusic.utils.yumidb import user_admin
 from pyrogram import filters
