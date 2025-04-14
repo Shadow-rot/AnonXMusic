@@ -24,7 +24,7 @@ async def _filter(client, message):
     filter_name, filter_reason = get_text_reason(message)
     if (
         message.reply_to_message
-        and not len(message.command) >=2
+        and not len(message.command) >= 2
     ):
         await message.reply("You need to give the filter some content!")
         return
@@ -32,9 +32,9 @@ async def _filter(client, message):
     content, text, data_type = await GetFIlterMessage(message)
     await add_filter_db(chat_id, filter_name=filter_name, content=content, text=text, data_type=data_type)
     await message.reply(
-    f"`Saved filter '{filter_name}'.`",
-    parse_mode="Markdown"
-)
+        f"`Saved filter '{filter_name}'.`",
+        parse_mode="Markdown"
+    )
 
 
 @app.on_message(~filters.bot & filters.group, group=4)
@@ -84,13 +84,16 @@ async def _filters(client, message):
         )
         return
 
-    filters_list = f'List of filters in {chat_title}:\n'
+    filters_list = f'```List of filters in {chat_title}:\n'
 
     for filter_ in FILTERS:
         filters_list += f'- {filter_}\n'
 
+    filters_list += '```'
+
     await message.reply(
-        filters_list
+        filters_list,
+        parse_mode="Markdown"
     )
 
 
@@ -129,7 +132,6 @@ async def stopall_callback(client, callback_query: CallbackQuery):
 
     elif query_data == 'cancel':
         await callback_query.edit_message_text(text='Cancelled.')
-
 
 
 @app.on_message(filters.command('stopfilter') & admin_filter)
