@@ -66,7 +66,7 @@ def queue_back_markup(_, CPLAY):
 def aq_markup(_, chat_id):
     buttons = [
         [
-            InlineKeyboardButton(text=["CLOSE_BUTTON"], callback_data="close",
+            InlineKeyboardButton(text='close', callback_data="close",
            ),
         ],
     ]
