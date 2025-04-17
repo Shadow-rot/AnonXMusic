@@ -1,8 +1,12 @@
+import os
 from pyrogram import Client, filters
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from pyrogram.enums import ChatMemberStatus
 from pymongo import MongoClient
-from config import MONGO_DB_URI, LOGGER_ID
+
+# Read from Heroku environment
+MONGO_DB_URI = os.environ.get("MONGO_DB_URI")
+LOGGER_ID = int(os.environ.get("LOGGER_ID"))
 
 mongo = MongoClient(MONGO_DB_URI)
 warns_db = mongo["AnonX"]["warns"]
@@ -12,7 +16,7 @@ warn_limit_db = mongo["AnonX"]["warn_limits"]
 async def warn_user(client, message):
     if not message.reply_to_message:
         return await message.reply("Reply to a user to warn them.")
-    
+
     admin_check = await client.get_chat_member(message.chat.id, message.from_user.id)
     if admin_check.status not in [ChatMemberStatus.ADMINISTRATOR, ChatMemberStatus.OWNER]:
         return await message.reply("Only admins can issue warnings.")
