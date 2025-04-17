@@ -1,4 +1,4 @@
-from pyrogram import Client, filters
+"""from pyrogram import Client, filters
 from pyrogram.types import Message
 import os
 import ffmpeg
@@ -72,4 +72,4 @@ async def resize_video(input_path, output_path):
         # Ensure the output video is compatible with Telegram
         ffmpeg.input(output_path).output(output_path, vcodec="libx264", acodec="aac", format="mp4").run()
     except Exception as e:
-        print(f"Error while resizing video: {e}")
+        print(f"Error while resizing video: {e}")"""
