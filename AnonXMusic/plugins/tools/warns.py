@@ -1,4 +1,4 @@
-import os
+"""import os
 from pyrogram import Client, filters
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from pyrogram.enums import ChatMemberStatus
@@ -123,4 +123,4 @@ async def set_warn_limit(client, message):
         upsert=True
     )
 
-    await message.reply(f"Warn limit for this group has been set to {limit}.")
+    await message.reply(f"Warn limit for this group has been set to {limit}.")"""
