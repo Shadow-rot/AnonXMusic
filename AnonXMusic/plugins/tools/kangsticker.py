@@ -120,19 +120,19 @@ async def kang(client, message: Message):
     while True:
         if is_animated:
             if packnum == 0:
-                packname = f"a{message.from_user.id}_by_{botname_clean}"
+                packname = f"a{message.from_user.id}_by_{BOT_USERNAME}"
             else:
-                packname = f"a{packnum}_{message.from_user.id}_by_{botname_clean}"
+                packname = f"a{packnum}_{message.from_user.id}_by_{BOT_USERNAME}"
         elif is_video:
             if packnum == 0:
-                packname = f"v{message.from_user.id}_by_{botname_clean}"
+                packname = f"v{message.from_user.id}_by_{BOT_USERNAME}"
             else:
-                packname = f"v{packnum}_{message.from_user.id}_by_{botname_clean}"
+                packname = f"v{packnum}_{message.from_user.id}_by_{BOT_USERNAME}"
         else:
             if packnum == 0:
-                packname = f"f{message.from_user.id}_by_{botname_clean}"
+                packname = f"f{message.from_user.id}_by_{BOT_USERNAME}"
             else:
-                packname = f"f{packnum}_{message.from_user.id}_by_{botname_clean}"
+                packname = f"f{packnum}_{message.from_user.id}_by_{BOT_USERNAME}"
 
         try:
             stickerset = await get_sticker_set_by_name(client, packname)
@@ -151,7 +151,7 @@ async def kang(client, message: Message):
             elif len(stickerset.stickers) >= MAX_STICKERS:
                 packnum += 1
                 limit += 1
-                if limit >= 50:
+                if limit >= 120:
                     return await msg.edit("ʟɪᴍɪᴛ ʀᴇᴀᴄʜᴇᴅ.")
                 continue
 
