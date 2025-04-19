@@ -31,21 +31,25 @@ from AnonXMusic.utils.stickerset import (
 
 MAX_STICKERS = 120
 SUPPORTED_TYPES = ["jpeg", "png", "webp"]
-botname_clean = BOT_USERNAME.replace("@", "")
 
+# Clean bot username for pack naming
+botname_clean = BOT_USERNAME.replace("@", "")
 
 @app.on_message(filters.command("get_sticker"))
 @capture_err
 async def sticker_image(_, message: Message):
     r = message.reply_to_message
     if not r or not r.sticker:
-        return await message.reply("Reply to a sticker.")
-    m = await message.reply("Sending...")
+        return await message.reply("ʀᴇᴘʟʏ ᴛᴏ ᴀ sᴛɪᴄᴋᴇʀ......")
+
+    m = await message.reply("sᴇɴᴅɪɴɢ.........ᴡᴀɪᴛ")
     f = await r.download(f"{r.sticker.file_unique_id}.png")
+
     await gather(
         message.reply_photo(f),
         message.reply_document(f),
     )
+
     await m.delete()
     os.remove(f)
 
@@ -54,11 +58,12 @@ async def sticker_image(_, message: Message):
 @capture_err
 async def kang(client, message: Message):
     if not message.reply_to_message:
-        return await message.reply_text("ʀᴇᴘʟʏ ᴛᴏ ᴀ sᴛɪᴄᴋᴇʀ/ɪᴍᴀɢᴇ/ᴀɴɪᴍᴀᴛɪᴏɴ ᴛᴏ ᴋᴀɴɢ ɪᴛ...")
+        return await message.reply_text("ʀᴇᴘʟʏ ᴛᴏ ᴀ sᴛɪᴄᴋᴇʀ/ɪᴍᴀɢᴇ ᴛᴏ ᴋᴀɴɢ ᴛʜᴀᴛ...")
     if not message.from_user:
         return await message.reply_text("ʏᴏᴜ ᴀʀᴇ ᴀɴᴏɴ ᴀᴅᴍɪɴ, ᴋᴀɴɢ sᴛɪᴄᴋᴇʀs ɪɴ ᴍʏ ᴘᴍ.....")
 
-    msg = await message.reply_text("ᴋᴀɴɢɪɴɢ.....")
+    msg = await message.reply_text("ᴋᴀɴɢɪɴɢ sᴛɪᴄᴋᴇʀ.....")
+
     args = message.text.split()
     if len(args) > 1:
         sticker_emoji = str(args[1])
@@ -67,91 +72,94 @@ async def kang(client, message: Message):
     else:
         sticker_emoji = "🤔"
 
-    is_animated = False
-    is_video = False
     doc = message.reply_to_message.photo or message.reply_to_message.document
 
     try:
         if message.reply_to_message.sticker:
-            is_animated = message.reply_to_message.sticker.is_animated
-            is_video = message.reply_to_message.sticker.is_video
             sticker = await create_sticker(
                 await get_document_from_file_id(message.reply_to_message.sticker.file_id),
                 sticker_emoji,
             )
         elif doc:
             if doc.file_size > 10_000_000:
-                return await msg.edit("ғɪʟᴇ sɪᴢᴇ ɪs ᴛᴏᴏ ʟᴀʀɢᴇ.")
+                return await msg.edit("ғɪʟᴇ sɪᴢᴇs ᴛᴏᴏ ʟᴀʀɢᴇ.")
+
             temp_file_path = await app.download_media(doc)
             image_type = imghdr.what(temp_file_path)
+
             if image_type not in SUPPORTED_TYPES:
                 return await msg.edit(f"ғᴏʀᴍᴀᴛ ɴᴏᴛ sᴜᴘᴘᴏʀᴛᴇᴅ! ({image_type})")
+
             try:
                 temp_file_path = await resize_file_to_sticker_size(temp_file_path)
             except OSError as e:
-                await msg.edit("Failed to resize image.")
-                raise Exception(f"Resize error at {temp_file_path}; {e}")
+                await msg.edit("Something went wrong while resizing the image.")
+                raise Exception(f"ʀᴇsɪᴢᴇ ғᴀɪʟᴇᴅ ᴀᴛ {temp_file_path}; {e}")
+
             sticker = await create_sticker(
                 await upload_document(client, temp_file_path, message.chat.id),
                 sticker_emoji,
             )
+
             if os.path.isfile(temp_file_path):
                 os.remove(temp_file_path)
         else:
             return await msg.edit("ᴄᴀɴ'ᴛ ᴋᴀɴɢ ᴛʜɪs ᴍᴇssᴀɢᴇ....")
+    except ShortnameOccupyFailed:
+        return await message.reply_text("Change your name or username.")
     except Exception as e:
         await message.reply_text(str(e))
         print(format_exc())
         return
 
     packnum = 0
+    base_packname = f"f{message.from_user.id}_by_{botname_clean}"
+    packname = base_packname
     limit = 0
-    while True:
-        if is_animated:
-            packname = f"a{packnum}_{message.from_user.id}_by_{botname_clean}" if packnum else f"a{message.from_user.id}_by_{botname_clean}"
-        elif is_video:
-            packname = f"v{packnum}_{message.from_user.id}_by_{botname_clean}" if packnum else f"v{message.from_user.id}_by_{botname_clean}"
-        else:
-            packname = f"f{packnum}_{message.from_user.id}_by_{botname_clean}" if packnum else f"f{message.from_user.id}_by_{botname_clean}"
 
-        try:
+    try:
+        while True:
+            if limit >= 50:
+                return await msg.delete()
+
             stickerset = await get_sticker_set_by_name(client, packname)
+
             if not stickerset:
-                title_prefix = "animated" if is_animated else "video" if is_video else "kang"
                 await create_sticker_set(
                     client,
                     message.from_user.id,
-                    f"{message.from_user.first_name[:32]}'s {title_prefix} pack",
+                    f"{message.from_user.first_name[:32]}'s kang pack",
                     packname,
                     [sticker],
                 )
-                break
-            elif len(stickerset.stickers) >= MAX_STICKERS:
+            elif stickerset.set.count >= MAX_STICKERS:
                 packnum += 1
+                packname = f"f{packnum}_{message.from_user.id}_by_{botname_clean}"
                 limit += 1
-                if limit >= 120:
-                    return await msg.edit("ʟɪᴍɪᴛ ʀᴇᴀᴄʜᴇᴅ.")
                 continue
             else:
-                await add_sticker_to_set(client, stickerset, sticker)
-                break
-        except (PeerIdInvalid, UserIsBlocked):
-            keyboard = InlineKeyboardMarkup([
-                [InlineKeyboardButton("Start", url=f"https://t.me/{botname_clean}")]
-            ])
-            return await msg.edit(
-                "Start a private chat with me first...",
-                reply_markup=keyboard,
-            )
-        except StickerEmojiInvalid:
-            return await msg.edit("Invalid emoji.")
-        except Exception as e:
-            print(format_exc())
-            return await msg.edit(f"Error: {e}")
+                try:
+                    await add_sticker_to_set(client, stickerset, sticker)
+                except StickerEmojiInvalid:
+                    return await msg.edit("[ERROR]: Invalid emoji in argument.")
+            break
 
-    await msg.edit(
-        f"sᴛɪᴄᴋᴇʀ ᴀᴅᴅᴇᴅ ᴛᴏ ʏᴏᴜʀ ᴘᴀᴄᴋ #{packnum + 1}!\nᴛᴀᴘ ᴛʜᴇ ʙᴜᴛᴛᴏɴ",
-        reply_markup=InlineKeyboardMarkup([
-            [InlineKeyboardButton("View Pack", url=f"https://t.me/addstickers/{packname}")]
+        await msg.edit(
+            "sᴛɪᴄᴋᴇʀ ᴀᴅᴅᴇᴅ ᴛᴏ ʏᴏᴜʀ ᴘᴀᴄᴋ!\nᴛᴀᴘ ᴛʜᴇ ʙᴜᴛᴛᴏɴ",
+            reply_markup=InlineKeyboardMarkup([
+                [InlineKeyboardButton("View Pack", url=f"https://t.me/addstickers/{packname}")]
+            ])
+        )
+
+    except (PeerIdInvalid, UserIsBlocked):
+        keyboard = InlineKeyboardMarkup([
+            [InlineKeyboardButton("Start", url=f"https://t.me/{botname_clean}")]
         ])
-    )
+        await msg.edit(
+            "ʏᴏᴜ ɴᴇᴇᴅ ᴛᴏ sᴛᴀʀᴛ ᴀ ᴘʀɪᴠᴀᴛᴇ ᴄʜᴀᴛ ᴡɪᴛʜ ᴍᴇ...",
+            reply_markup=keyboard,
+        )
+    except StickerPngNopng:
+        await message.reply_text("Stickers must be PNG files, but this one is not.")
+    except StickerPngDimensions:
+        await message.reply_text("The sticker PNG dimensions are invalid.")
