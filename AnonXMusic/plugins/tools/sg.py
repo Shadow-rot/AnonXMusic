@@ -1,35 +1,35 @@
-import asyncio
-import random
 from pyrogram import Client, filters
 from pyrogram.types import Message
 from pyrogram.raw.functions.messages import DeleteHistory
+import asyncio
+import random
 
 from AnonXMusic import userbot as us, app
 from AnonXMusic.core.userbot import assistants
 
-@app.on_message(filters.command("sg") | filters.reply)
+@app.on_message(filters.command("sg"))
 async def sg(client: Client, message: Message):
-    # Ensure it's either a command or a reply
+    # Check if it's a reply or if username/ID is provided
     if not message.reply_to_message and len(message.text.split()) < 2:
-        return await message.reply("Please provide a username/ID or reply to a user's message!")
+        return await message.reply("Please provide a username/ID or reply to a user's message using /sg!")
 
-    # Get target user
+    # Get user ID from reply or argument
     if message.reply_to_message:
         args = message.reply_to_message.from_user.id
     else:
         args = message.text.split()[1]
 
-    lol = await message.reply("Looking up...")
+    lol = await message.reply("waittttt...")
 
     try:
         user = await client.get_users(f"{args}")
     except Exception:
         return await lol.edit("<code>Please provide a valid username or ID!</code>")
 
-    # Pick a random bot
+    # Choose a random Sangmata bot
     sg_bot = random.choice(["sangmata_bot", "sangmata_beta_bot"])
 
-    # Pick an available assistant
+    # Select available userbot assistant
     if 1 in assistants:
         ubot = us.one
     else:
@@ -50,7 +50,7 @@ async def sg(client: Client, message: Message):
     else:
         await message.reply("The bot didn't return any data.")
 
-    # Delete history
+    # Delete chat history with Sangmata bot
     try:
         user_info = await ubot.resolve_peer(sg_bot)
         await ubot.send(DeleteHistory(peer=user_info, max_id=0, revoke=True))
